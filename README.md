@@ -5,7 +5,7 @@ Karolina Deszcz,
 
 Projekt realizowany w ramach przedmiotu Analiza algorytmów.
 
-##1. Opis problemu
+## 1. Opis problemu
 Danych jest n ponumerowanych kolejno pojemników. W pojemnikach znajdują się
 klocki w k kolorach, przy czym łącznie we wszystkich pojemnikach jest nie więcej niż
 n klocków danego koloru. Pojemność i-tego pojemnika wynosi p i klocków. Należy
@@ -14,7 +14,7 @@ klocek każdego koloru. W jednym ruchu można przełożyć jeden klocek z pojemn
 w którym się znajduje do pudełka sąsiedniego (dozwolone jest przenoszenie pomiędzy
 pudełkiem pierwszym i n-tym).
 
-##2. Zaimplementowane algorytmy
+## 2. Zaimplementowane algorytmy
 2.1 Algorytm naiwny
 
 Zaczynając od pierwszego kubka sprawdzamy czy w zbiorze klocków do
@@ -46,7 +46,7 @@ ustalany na początku każdej iteracji. W pierwszej, jest to wartość funkcji c
 w każdej kolejnej jest to najmniejsza wartość funkcji celu, która przekroczyła limit w poprzedniej iteracji.
 Algorytm działa tak długo, aż nie zostanie wygenerowany węzeł, dla którego h(n) = 0.
 
-##3. Struktury danych
+## 3. Struktury danych
 3.1 Bucket 
 pojemnik, zawiera wektor klocków, których kolor reprezowany jest przez liczbę całkowitą.
 Dodatkowo bucket przechowuje zbiór zaakceptowanych klocków (set) oraz zbiór klocków, które muszą zostać przeniesione do 
@@ -55,7 +55,7 @@ innego pojemnika (multiset)
 struktura używana w algorytmach grafowych. Reprezentuje stan wszystkich pojemników. Przechowuje wektor pojemników.
 Dla bardziej optymalnego przechowywania stanów odwiedzonych została posiada funkcję hashującą.
 
-##4.Przewodnik po plikach
+## 4.Przewodnik po plikach
 
 generator.h/generator.cpp => implementacja klasy Bucket, implementacja klasy Test, generatora losowych danych
 Naive.h/Naive.cpp => implementacja algorytmu naiwnego
@@ -64,5 +64,5 @@ IDAStar.h/IDAStar.cpp => implementacja algorytmu Iterative Deeping A*
 Application.h/Application.cpp => interfejs użytkownika, wywołuje wykonanie algorytmów
 Main.cpp => uruchamia aplikację
 
-##5. Sposób uruchomienia programu
-##6. Wejście i wyjście
+## 5. Sposób uruchomienia programu
+## 6. Wejście i wyjście
