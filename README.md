@@ -28,7 +28,7 @@ Następnie rozpatrujemy w ten sam sposób drugi i każdy kolejny pojemnik.
 W momencie gdy po przejściu przez wszystkie pojemniki nie zostało wykonane
 żadne przeniesienie problem zostaje uznany za niemożliwy do rozwiązania.
 
-2.2 BFS – przeszukiwanie wszerz
+2.2 BFS – przeszukiwanie wszerz 
 Problem reprezentowany jest w formie drzewa, którego wierzchołkami są stany
 reprezentujące obecne rozmieszczenie klocków w pojemnikach. Wierzchołki
 potomne powstają poprzez przeniesienie jednego klocka do pojemnika po
@@ -47,22 +47,29 @@ w każdej kolejnej jest to najmniejsza wartość funkcji celu, która przekroczy
 Algorytm działa tak długo, aż nie zostanie wygenerowany węzeł, dla którego h(n) = 0.
 
 ## 3. Struktury danych
-3.1 Bucket 
+3.1 Bucket  <br />
 pojemnik, zawiera wektor klocków, których kolor reprezowany jest przez liczbę całkowitą.
 Dodatkowo bucket przechowuje zbiór zaakceptowanych klocków (set) oraz zbiór klocków, które muszą zostać przeniesione do 
 innego pojemnika (multiset)
-3.2 State
+3.2 State <br />
 struktura używana w algorytmach grafowych. Reprezentuje stan wszystkich pojemników. Przechowuje wektor pojemników.
 Dla bardziej optymalnego przechowywania stanów odwiedzonych została posiada funkcję hashującą.
 
 ## 4.Przewodnik po plikach
 
-generator.h/generator.cpp => implementacja klasy Bucket, implementacja klasy Test, generatora losowych danych
-Naive.h/Naive.cpp => implementacja algorytmu naiwnego
-BSF.h/BSF.cpp => implementacja algorytmu przeszukującego wszerz
-IDAStar.h/IDAStar.cpp => implementacja algorytmu Iterative Deeping A*
-Application.h/Application.cpp => interfejs użytkownika, wywołuje wykonanie algorytmów
-Main.cpp => uruchamia aplikację
+generator.h/generator.cpp => implementacja klasy Bucket, implementacja klasy Test, generatora losowych danych <br />
+Naive.h/Naive.cpp => implementacja algorytmu naiwnego <br />
+BSF.h/BSF.cpp => implementacja algorytmu przeszukującego wszerz <br />
+IDAStar.h/IDAStar.cpp => implementacja algorytmu Iterative Deeping A* <br />
+Application.h/Application.cpp => interfejs użytkownika, wywołuje wykonanie algorytmów <br />
+Main.cpp => uruchamia aplikację <br />
 
 ## 5. Sposób uruchomienia programu
-## 6. Wejście i wyjście
+
+Użytkownik ma możliwość uruchomienia programu w trzech trybach (m1/m2/m3). <br /><br />
+Tryb m1: przypadek testowy zapisany jest w pliku, którego ścieżkę podaje się jako argument programu. Na standardowe wyjście zostaną wyświetlone czas i ilość iteracji w jakich problem został rozwiązany przez dany algorytm. Użytkownik może dodać parametr --a file.txt, wtedy dla każdego algorytmu zostaną wygenerowane pliki zawieracjące szczegółowe informacje odnośnie przebiegu działania algorytmów (pliki odpowiednio Naive_file.txt, BSF_file.txt, IDA_file.txt) <br />
+przykład wywołania: ./App m1 -f input.txt -a out.txt <br /> <br />
+Tryb m2: przypadek testowy generowany jest automatycznie, jednak użytkownik określa parametry generatora. Podaje liczbę pojemników (-n), liczbę kolorów (-k). Pozostałe parametry są opcjonalne: maksymalna pojemność pojemnika (--max_p), minimalna pojemność pojemnika(--min_p), maksymalna ilość wolnego miejsca jaka może pozostać w pojemniku(--max_free_space), minimalna ilość wolnego miejsca(--min_free_space). Parametry, które nie zostaną podane przez użytkownika przybierają wartości domyslne. Jeśli użytkownik doda parametr --a, jak w poprzednim trybie zostaną wygenerowane pliki z zapisem przebiegu algorytmów.  Na standardowe wyjście zostaną wyświetlone czas i ilość iteracji w jakich problem został rozwiązany przez dany algorytm. <br />
+przykład wywołania: ./App m2 -n 10 -k 5 --max_p 5 -a out.txt <br /> <br />
+Tryb m3 : wygenerowanie zestawu przypadków testowych. Użytkownik podaje liczbę testów (-t), liczbę pojemników (-n) oraz liczbę kolorów (-k). Dla każdego algorytmu wyświetlana jest średnia ilość wykonanych iteracji oraz średni czas w jakim algorytm rozwiązał problem. </br>
+przykład wywołania: ./App m3 -t 10 -n 10 -k 5 
