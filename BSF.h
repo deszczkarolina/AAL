@@ -30,7 +30,6 @@ namespace algorithm {
             State(const State& other);
             State(const generator::Test &t);
 
-
             bool operator==(const State &other) const;
             bool operator!=(const State &other) const;
 
@@ -39,17 +38,19 @@ namespace algorithm {
             State move (int from, int dest, int color) const;
             std::size_t hash();
         };
-
-    public:
-        const int iteration_limit = 1000000;
-
-        virtual int run();
-
         BSF(const generator::Test &t);
+        const int iteration_limit = 100000;
+        virtual int run();
+        virtual void saveToFile(std::string file_name);
 
     protected:
         std::set<size_t> visited;
         int k;
+        std::vector<std::vector<int>> track;
+        int result;
+    public:
+        int getResult() const;
+
     private:
         State initial;
         virtual std::vector<State> generate_states(State& s);

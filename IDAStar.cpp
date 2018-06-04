@@ -10,7 +10,8 @@
 #define FOUND 0
 namespace algorithm {
 
-    IDAStar::IDAStar(const generator::Test &t):node(t), BSF(t) {}
+    IDAStar::IDAStar(const generator::Test &t):node(t), BSF(t) {
+    }
 
     IDAStar::State::State(const IDAStar::State &other): BSF::State(other) {
         h = calculate_h();
@@ -25,16 +26,15 @@ namespace algorithm {
         depth = 0;
     }
 
-
     int IDAStar::State::calculate_h() {
         h = 0;
         for(auto& bucket : buckets)
             h += bucket.invalid.size();
-
         return h;
     }
 
     int IDAStar::run() {
+
         int bound = node.getH();
         int iteration = 0;
         while(1){
@@ -42,8 +42,10 @@ namespace algorithm {
                return -1;
             visited.clear();
             int t = search(node,0,bound);
-            if (t == FOUND)
+            if (t == FOUND) {
+                result = node.getDepth();
                 return node.getDepth();
+            }
             if (t == INT32_MAX)
                 return -1;
             bound = t;
@@ -64,9 +66,10 @@ namespace algorithm {
                 right_dest = ++from % (int) s.buckets.size();
                 if (!s.buckets[left_dest].isFull())
                     states.push_back(s.move(i, left_dest, invalid));
-
+                track.push_back({i,left_dest,invalid});
                 if (!s.buckets[right_dest].isFull() )
                     states.push_back(s.move(i, right_dest, invalid));
+                track.push_back({i,right_dest,invalid});
             }
         }
         return states;
@@ -86,8 +89,7 @@ namespace algorithm {
 
         std::vector<IDAStar::State> children = generate_children(current);
         for (auto &next: children){
-     //       std::cout<<"iteration: "<< i<<std::endl;
-            if (visited.count(next.hash())){
+              if (visited.count(next.hash())){
                 break;
             }
             int t = search(next, g+1,bound);
@@ -100,18 +102,34 @@ namespace algorithm {
         return min;
     }
 
+    void IDAStar::saveToFile(std::string file_name) {
+        std::ofstream output;
+        output.open(file_name, std::ios::out);
+        output<< "algorithm: IDASTAR"<<std::endl;
+        output<< "parameters: "<<std::endl;
+        output<< "n: "<<node.buckets.size()<<" k: " << k << std::endl;
+
+        for (auto vec : track)
+            output << "from: " << vec[0] << "  to: " << vec[1] << "  block: " << vec[2] << std::endl;
+
+        output.close();
+    }
+
+
     IDAStar::State IDAStar::State::move(int from, int dest, int color) const {
         IDAStar::State new_State(*this);
         auto it = new_State.buckets[from].invalid.find(color);
         new_State.buckets[from].invalid.erase(it);
         auto it2 =  std::find(new_State.buckets[from].blocks.begin(),new_State.buckets[from].blocks.end(), color);
         new_State.buckets[from].blocks.erase(it2);
-
-        new_State.buckets[dest].accepted.insert(color);
+        auto it3 = std::find(new_State.buckets[dest].blocks.begin(), new_State.buckets[dest].blocks.end(), color);
+        if (it3 == new_State.buckets[dest].blocks.end())
+            new_State.buckets[dest].accepted.insert(color);
+        else
+            new_State.buckets[dest].invalid.insert(color);
         new_State.buckets[dest].blocks.push_back(color);
         new_State.calculate_h();
         new_State.depth ++;
-    //    std::cout<<"from: " <<from <<" dest: " << dest <<" color: " <<color<< std::endl;
         return new_State;
     }
 

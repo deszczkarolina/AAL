@@ -5,9 +5,8 @@
 #include <algorithm>
 #include <iostream>
 #include "Naive.h"
-
+#include <fstream>
 namespace algorithm {
-
 
     bool Naive::resolved() {
         for (auto &bucket: buckets)
@@ -16,12 +15,12 @@ namespace algorithm {
         return true;
     }
 
-    Naive::Naive(const generator::Test &t) : k(t.getK()) {
+    Naive::Naive(const generator::Test &t) : k(t.getK()), result(-1) {
         for (auto &&bucket: t.getBuckets())
             buckets.push_back(generator::Bucket(bucket));
     }
 
-    std::ostream &operator<<(std::ostream &out, const Naive &n) {
+/*    std::ostream &operator<<(std::ostream &out, const Naive &n) {
         for (int i = 0; i < n.buckets.size(); i++) {
             std::cout << "\n Bucket id: " << i << "\t Capacity: " << n.buckets[i].capacity;
             std::cout << "\t blocks number: " << n.buckets[i].blocks.size() << "\n";
@@ -36,7 +35,7 @@ namespace algorithm {
                 std::cout << block << ", ";
         }
         return out;
-    }
+    }*/
 
     int move_left(int from, int dest, Naive &alg) {
         int moves = 0;
@@ -88,7 +87,6 @@ namespace algorithm {
         if(moves){
             auto invalid_it = alg.buckets[from].invalid.find(color_index);
             alg.buckets[from].invalid.erase(invalid_it);
-
             auto blocks_it = std::find(alg.buckets[from].blocks.begin(),alg.buckets[from].blocks.end(), color_index);
             if(blocks_it == alg.buckets[from].blocks.end())
                 std::cerr << "something went wrong";
@@ -98,12 +96,13 @@ namespace algorithm {
             alg.buckets[dest].blocks.push_back(color_index);
         }
         return moves;
-
     }
 
     int Naive::run() {
-        if (resolved())
+        if (resolved()) {
+            result = 0;
             return 0;
+        }
         int total_moves = 0;
         int iteration = 0;
         while (true) {
@@ -118,11 +117,14 @@ namespace algorithm {
                 total_moves = -1;
                 break;
             }
-            if (resolved())
-                return total_moves;
+            if (resolved()) {
+                result = total_moves;
+                return result;
+            }
             iteration++;
         }
-        return total_moves;
+        result = total_moves;
+        return result;
     }
 
 
@@ -132,10 +134,11 @@ namespace algorithm {
         int moves_per_block = 0;
         auto invalid_colors = alg.buckets[from].invalid;
         for (auto& invalid: invalid_colors) {
-            for (int i = 0; i < alg.buckets.size() - 1; i++) {
+            for (int i = 0; i < alg.buckets.size(); i++) {
                 auto accept = alg.buckets[i].accepted.find(invalid);
                 if (accept == alg.buckets[i].accepted.end() && !alg.buckets[i].isFull()) {
                     moves_per_block = move(from, i, invalid, alg);
+                    alg.track.push_back({from,i,invalid, moves_per_block});
                     if (moves_per_block) {
                         moves_per_bucket += moves_per_block;
                         break;
@@ -143,6 +146,36 @@ namespace algorithm {
                 }
             }
         }
-        return moves_per_block;
+        return moves_per_bucket;
+    }
+
+    void Naive::saveToFile(std::string file_name) {
+        std::ofstream output;
+        output.open(file_name, std::ios::out);
+        output<< "algorithm: NAIVE"<<std::endl;
+        output<< "parameters: "<<std::endl;
+        output<< "n: "<<buckets.size()<<" k: " << k << std::endl;
+
+
+        if (result == -1)
+            output<< "solution not found"<<std::endl;
+        else {
+            output<< "solution found in "<< result << " iterations" <<std::endl;
+            for (auto vec : track)
+                output << "from: " << vec[0] << "  to: " << vec[1] << "  block: " << vec[2] << " moves made: " << vec[3]<<std::endl;
+
+        }
+        output<<std::endl;
+        for (int i = 0; i < buckets.size(); i++){
+            output<< "bucket " <<i+1<<" capacity: " << buckets[i].capacity<< std::endl;
+            for (auto &block: buckets[i].blocks)
+                output<<block<< ", ";
+            output<<std::endl;
+        }
+        output.close();
+    }
+
+    int Naive::getResult() const {
+        return result;
     }
 }

@@ -6,7 +6,7 @@
 #include <iostream>
 
 #include "BSF.h"
-
+#include <fstream>
 namespace algorithm {
 
     BSF::State::State(const algorithm::BSF::State &other) {
@@ -46,8 +46,11 @@ namespace algorithm {
         new_State.buckets[from].invalid.erase(it);
         auto it2 = std::find(new_State.buckets[from].blocks.begin(), new_State.buckets[from].blocks.end(), color);
         new_State.buckets[from].blocks.erase(it2);
-
-        new_State.buckets[dest].accepted.insert(color);
+        auto it3 = std::find(new_State.buckets[dest].blocks.begin(), new_State.buckets[dest].blocks.end(), color);
+        if (it3 == new_State.buckets[dest].blocks.end())
+            new_State.buckets[dest].accepted.insert(color);
+        else
+            new_State.buckets[dest].invalid.insert(color);
         new_State.buckets[dest].blocks.push_back(color);
 
         return new_State;
@@ -61,7 +64,7 @@ namespace algorithm {
         return seed;
     }
 
-    BSF::BSF(const generator::Test &t) : initial(t), k(t.getK()) {}
+    BSF::BSF(const generator::Test &t) : initial(t), k(t.getK()), result(-1) {}
 
 
     int BSF::run() {
@@ -74,8 +77,10 @@ namespace algorithm {
             int iteration_id = generated_states.front().first;
             generated_states.pop();
 
-            if (current.resolved())
+            if (current.resolved()) {
+                result = iteration_id;
                 return iteration_id;
+            }
 
             std::vector<State> child_states = generate_states(current);
             for (auto &child : child_states)
@@ -86,15 +91,27 @@ namespace algorithm {
                 }
 
             iteration++;
-            if (iteration > 0){
-                 std::cout<<generated_states.size()<<std::endl;
-            }
+
             if (iteration > iteration_limit)
                 return -1;
 
         }
         if (generated_states.empty())
             return -1;
+    }
+
+    void BSF::saveToFile(std::string file_name) {
+        std::ofstream output;
+        output.open(file_name, std::ios::out);
+        output<< "algorithm: BSF"<<std::endl;
+        output<< "parameters: "<<std::endl;
+
+        output<< "n: "<<initial.buckets.size()<<" k: " << k << std::endl;
+
+        for (auto vec : track)
+            output << "from: " << vec[0] << "  to: " << vec[1] << "  block: " << vec[2] << std::endl;
+
+        output.close();
     }
 
     std::vector<BSF::State> BSF::generate_states(BSF::State &s) {
@@ -110,13 +127,21 @@ namespace algorithm {
                 from++;
                 right_dest = ++from % (int) s.buckets.size();
 
-                if (!s.buckets[left_dest].isFull())
+                if (!s.buckets[left_dest].isFull()) {
                     states.push_back(s.move(i, left_dest, invalid));
-                if (!s.buckets[right_dest].isFull())
+                    track.push_back({i, left_dest, invalid});
+                }
+                if (!s.buckets[right_dest].isFull()) {
                     states.push_back(s.move(i, right_dest, invalid));
+                    track.push_back({i, left_dest, invalid});
+                }
             }
         }
         return states;
+    }
+
+    int BSF::getResult() const {
+        return result;
     }
 
 
@@ -139,9 +164,7 @@ namespace algorithm {
     }
 
     bool BSF::Bucket::operator==(const BSF::Bucket &other) const {
-        if (accepted == other.accepted && invalid == other.invalid && capacity == other.capacity)
-            return true;
-        else return false;
+        return accepted == other.accepted && invalid == other.invalid && capacity == other.capacity;
     }
 
     bool BSF::Bucket::operator!=(const BSF::Bucket &other) const {

@@ -11,26 +11,29 @@
 namespace algorithm {
 
     class Naive {
-    public:
 
+    public:
         const int iteration_limit = 1000000;
 
+    private:
+        int k;
+        std::vector<generator::Bucket> buckets;
+        std::vector<std::vector<int>> track;
+        int result;
+
+    public:
         Naive(const generator::Test &t);
         int run();
         bool resolved();
+        void saveToFile(std::string file_name);
 
         friend int move(int from, int dest, int color_index, Naive& alg);
         friend int move_right(int from, int dest, Naive& alg);
         friend int move_left(int from, int dest, Naive& alg);
 
-        friend std::ostream &operator<<(std::ostream &out, const Naive &n);
+    //    friend std::ostream &operator<<(std::ostream &out, const Naive &n);
         friend int move_invalid_blocks(int from, Naive &alg);
-
-
-    private:
-        int k;
-        std::vector<generator::Bucket> buckets;
-
+        int getResult() const;
     };
 
 }

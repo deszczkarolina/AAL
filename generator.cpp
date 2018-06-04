@@ -47,11 +47,6 @@ namespace generator {
         return blocks.size() == capacity;
     }
 
-    bool Bucket::isEmpty() {
-        return blocks.size() == 0;
-    }
-
-
     Bucket::Bucket(const int capacity, const int free_space, const std::vector<int> blocks, int k) {
         std::vector<int> count_repeated(k+1, 0);
         this->capacity = capacity;
@@ -70,8 +65,6 @@ namespace generator {
             else if (count_repeated[i] == 1)
                 accepted.insert(i);
     }
-
-
 
     Test::Test(std::string filename) {
         std::fstream file;
@@ -109,11 +102,9 @@ namespace generator {
         } else {
             throw std::ios_base::failure("Could not open file to write the test to");
         }
-
     }
 
-
-    std::ostream &operator<<(std::ostream &out, const Test &t) {
+   std::ostream &operator<<(std::ostream &out, const Test &t) {
         out << t.buckets.size() << " " << t.k << std::endl;
         for (auto &&bucket : t.buckets) {
             out <<bucket.capacity<< " " << bucket.blocks.size() << std::endl;
@@ -146,32 +137,63 @@ namespace generator {
         Test test = Test();
         test.setK(k);
 
-        std::default_random_engine generator;
+        std::random_device generator;
+        std::mt19937 gen(generator());
         std::uniform_int_distribution<int> capacity_distribution(min_p, max_p);
         std::vector<int> blocks;
         for (int i = 0; i < n; ++i) {
             blocks.clear();
-            blocks = generate_colors(k);
-            int capacity = capacity_distribution(generator);
+            std::vector<int> blocks = generate_colors(k);
+            int capacity = capacity_distribution(gen);
 
             std::uniform_int_distribution<int> free_space_distribution(min_free_space, std::min(max_free_space, capacity));
-            int space = free_space_distribution(generator);
+            int space = free_space_distribution(gen);
 
             test.addBucket(Bucket(capacity, space, blocks,k));
         }
-
+        shuffle_test(test);
         return test;
     }
 
-    std::vector<int> generate_colors(int k) {
+    Test &shuffle_test(Test &t) {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> dis(0, (int)t.buckets.size() - 1);
 
-        std::default_random_engine generator;
-        std::uniform_int_distribution<int> color_distribution(1,k+1);
+        for (int i = 0; i < 100; ++i) {
+            int x = dis(gen);
+            Bucket &a = t.buckets[x];
+            Bucket &b = t.buckets[(x + 1) % t.buckets.size()];
 
+            if (b.isFull() or a.blocks.size() == 0) {
+                continue;
+            }
+            int tmp = a.blocks.back();
+
+            auto it = a.invalid.find(tmp);
+            if (it != a.invalid.end())
+                a.invalid.erase(tmp);
+            else
+                a.accepted.erase(tmp);
+
+            auto it2 = b.accepted.find(tmp);
+            if (it2 == b.accepted.end())
+                b.accepted.insert(tmp);
+            else
+                b.invalid.insert(tmp);
+            a.blocks.pop_back();
+            b.blocks.push_back(tmp);
+        }
+        return t;
+    }
+
+    std::vector<int>  generate_colors(int k) {
+        std::random_device generator;
+        std::mt19937 gen(generator());
+        std::uniform_int_distribution<int> color_distribution(1,k);
         std::vector<int> results;
         for (int i = 0; i < k; i++)
-            results.push_back(color_distribution(generator));
-
+            results.emplace_back(color_distribution(gen));
         return results;
     }
 
