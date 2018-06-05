@@ -113,6 +113,11 @@ void Application::run_test_from_command_line_parameters() {
     std::string flag, output_filename;
     int n, k, max_cap = 10, min_cap = 3, max_free = 4, min_free = 1;
 
+    reader >> flag;
+    if (flags[flag] == Flags::all) {
+        print_all = true;
+        reader >> output_filename;
+    }
 
     reader >> flag;
     if (flags[flag] != Flags::n) {
@@ -128,22 +133,23 @@ void Application::run_test_from_command_line_parameters() {
     }
     reader >> k;
 
+    reader >> flag;
     if (flags[flag] == Flags::max_p)
         reader >> max_cap;
 
+    reader >> flag;
     if (flags[flag] == Flags::min_p)
         reader >> min_cap;
 
+    reader >> flag;
     if (flags[flag] == Flags::max_free_space)
         reader >> max_free;
 
+    reader >> flag;
     if (flags[flag] == Flags::min_free_space)
         reader >> min_free;
 
-    if (flags[flag] == Flags::all) {
-        print_all = true;
-        reader >> output_filename;
-    }
+
 
     generator::Test test = generator::generate_test(n, k, min_cap, max_cap, min_free, max_free);
 

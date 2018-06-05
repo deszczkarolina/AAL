@@ -14,10 +14,9 @@ namespace algorithm {
 
     public:
         const int iteration_limit = 1000000;
-
+        std::vector<generator::Bucket> buckets;
     private:
         int k;
-        std::vector<generator::Bucket> buckets;
         std::vector<std::vector<int>> track;
         int result;
 
@@ -31,7 +30,7 @@ namespace algorithm {
         friend int move_right(int from, int dest, Naive& alg);
         friend int move_left(int from, int dest, Naive& alg);
 
-    //    friend std::ostream &operator<<(std::ostream &out, const Naive &n);
+        friend std::ostream &operator<<(std::ostream &out, const Naive &n);
         friend int move_invalid_blocks(int from, Naive &alg);
         int getResult() const;
     };

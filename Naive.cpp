@@ -20,7 +20,7 @@ namespace algorithm {
             buckets.push_back(generator::Bucket(bucket));
     }
 
-/*    std::ostream &operator<<(std::ostream &out, const Naive &n) {
+  std::ostream &operator<<(std::ostream &out, const Naive &n) {
         for (int i = 0; i < n.buckets.size(); i++) {
             std::cout << "\n Bucket id: " << i << "\t Capacity: " << n.buckets[i].capacity;
             std::cout << "\t blocks number: " << n.buckets[i].blocks.size() << "\n";
@@ -35,7 +35,7 @@ namespace algorithm {
                 std::cout << block << ", ";
         }
         return out;
-    }*/
+    }
 
     int move_left(int from, int dest, Naive &alg) {
         int moves = 0;
@@ -127,8 +127,6 @@ namespace algorithm {
         return result;
     }
 
-
-
     int move_invalid_blocks(int from, Naive &alg) {
         int moves_per_bucket = 0;
         int moves_per_block = 0;
@@ -155,7 +153,6 @@ namespace algorithm {
         output<< "algorithm: NAIVE"<<std::endl;
         output<< "parameters: "<<std::endl;
         output<< "n: "<<buckets.size()<<" k: " << k << std::endl;
-
 
         if (result == -1)
             output<< "solution not found"<<std::endl;

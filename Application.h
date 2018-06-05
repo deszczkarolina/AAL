@@ -15,7 +15,6 @@
 #include "BSF.h"
 #include "IDAStar.h"
 
-
 class Application {
 
     using Result = std::pair<long long int,std::chrono::duration<double>>;

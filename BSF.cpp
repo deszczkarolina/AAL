@@ -133,7 +133,7 @@ namespace algorithm {
                 }
                 if (!s.buckets[right_dest].isFull()) {
                     states.push_back(s.move(i, right_dest, invalid));
-                    track.push_back({i, left_dest, invalid});
+                    track.push_back({i, right_dest, invalid});
                 }
             }
         }
